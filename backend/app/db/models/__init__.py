@@ -9,10 +9,15 @@ from app.db.models.skill import (
     SkillNode,
 )
 
+from app.db.models.knowledge import (
+    KnowledgeCandidate,
+)
+
 __all__ = [
     "LearnerEvidence",
     "LearnerProfile",
     "LearnerSkillState",
     "SkillEdge",
     "SkillNode",
+    "KnowledgeCandidate",
 ]
