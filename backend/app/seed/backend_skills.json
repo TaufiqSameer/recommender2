@@ -1,0 +1,359 @@
+{
+    "version": "backend-v1",
+    "domain": "backend",
+    "skills": [
+      {
+        "id": "programming-fundamentals",
+        "label": "Programming Fundamentals",
+        "description": "Core programming concepts required for backend development.",
+        "difficulty": 1.0,
+        "prerequisites": [],
+        "learning_objectives": [
+          "Understand variables and data types",
+          "Understand control flow",
+          "Understand functions",
+          "Understand basic error handling",
+          "Understand basic object-oriented programming"
+        ]
+      },
+      {
+        "id": "git",
+        "label": "Git & Version Control",
+        "description": "Use Git for source control and collaborative software development.",
+        "difficulty": 1.5,
+        "prerequisites": [
+          "programming-fundamentals"
+        ],
+        "learning_objectives": [
+          "Understand repositories",
+          "Create commits",
+          "Work with branches",
+          "Merge branches",
+          "Resolve basic merge conflicts",
+          "Use remote repositories"
+        ]
+      },
+      {
+        "id": "linux",
+        "label": "Linux Fundamentals",
+        "description": "Understand the Linux environment used for backend development and deployment.",
+        "difficulty": 1.5,
+        "prerequisites": [
+          "programming-fundamentals"
+        ],
+        "learning_objectives": [
+          "Navigate the filesystem",
+          "Manage files and directories",
+          "Understand permissions",
+          "Use common shell commands",
+          "Manage processes",
+          "Understand environment variables"
+        ]
+      },
+      {
+        "id": "data-structures",
+        "label": "Basic Data Structures",
+        "description": "Understand common data structures useful for backend programming.",
+        "difficulty": 1.5,
+        "prerequisites": [
+          "programming-fundamentals"
+        ],
+        "learning_objectives": [
+          "Understand arrays and lists",
+          "Understand stacks and queues",
+          "Understand hash tables",
+          "Understand trees",
+          "Understand basic time complexity"
+        ]
+      },
+      {
+        "id": "networking",
+        "label": "Networking Fundamentals",
+        "description": "Understand the networking concepts required to build and operate backend systems.",
+        "difficulty": 2.0,
+        "prerequisites": [
+          "linux"
+        ],
+        "learning_objectives": [
+          "Understand IP addressing",
+          "Understand TCP and UDP",
+          "Understand DNS",
+          "Understand ports",
+          "Understand client-server communication"
+        ]
+      },
+      {
+        "id": "http",
+        "label": "HTTP",
+        "description": "Understand the HTTP protocol and its role in web communication.",
+        "difficulty": 2.0,
+        "prerequisites": [
+          "networking"
+        ],
+        "learning_objectives": [
+          "Understand HTTP request-response cycles",
+          "Understand HTTP methods",
+          "Understand status codes",
+          "Understand headers",
+          "Understand request and response bodies"
+        ]
+      },
+      {
+        "id": "rest",
+        "label": "REST API Design",
+        "description": "Understand the principles and conventions used to design REST APIs.",
+        "difficulty": 2.5,
+        "prerequisites": [
+          "http"
+        ],
+        "learning_objectives": [
+          "Understand resources",
+          "Design REST endpoints",
+          "Use HTTP methods correctly",
+          "Use appropriate status codes",
+          "Understand idempotency",
+          "Understand API versioning basics"
+        ]
+      },
+      {
+        "id": "api-design",
+        "label": "API Design & Best Practices",
+        "description": "Design maintainable, consistent, and production-oriented APIs.",
+        "difficulty": 3.0,
+        "prerequisites": [
+          "rest"
+        ],
+        "learning_objectives": [
+          "Design consistent API contracts",
+          "Handle errors consistently",
+          "Understand pagination",
+          "Understand filtering and sorting",
+          "Understand API versioning",
+          "Design usable API responses"
+        ]
+      },
+      {
+        "id": "sql",
+        "label": "SQL Fundamentals",
+        "description": "Understand relational databases and SQL queries.",
+        "difficulty": 2.0,
+        "prerequisites": [
+          "programming-fundamentals"
+        ],
+        "learning_objectives": [
+          "Understand relational tables",
+          "Write SELECT queries",
+          "Filter and sort data",
+          "Use joins",
+          "Use aggregate functions",
+          "Understand primary and foreign keys"
+        ]
+      },
+      {
+        "id": "data-modeling",
+        "label": "Database & Data Modeling",
+        "description": "Design relational data models for backend applications.",
+        "difficulty": 2.5,
+        "prerequisites": [
+          "sql"
+        ],
+        "learning_objectives": [
+          "Design entities and relationships",
+          "Understand normalization",
+          "Choose appropriate keys",
+          "Model one-to-many relationships",
+          "Model many-to-many relationships",
+          "Understand database constraints"
+        ]
+      },
+      {
+        "id": "postgresql",
+        "label": "PostgreSQL",
+        "description": "Use PostgreSQL effectively in backend applications.",
+        "difficulty": 2.5,
+        "prerequisites": [
+          "data-modeling"
+        ],
+        "learning_objectives": [
+          "Create PostgreSQL databases",
+          "Create tables and constraints",
+          "Use indexes",
+          "Understand transactions",
+          "Understand PostgreSQL data types",
+          "Connect PostgreSQL to applications"
+        ]
+      },
+      {
+        "id": "fastapi",
+        "label": "FastAPI",
+        "description": "Build backend APIs using FastAPI.",
+        "difficulty": 3.0,
+        "prerequisites": [
+          "api-design",
+          "postgresql"
+        ],
+        "learning_objectives": [
+          "Create FastAPI applications",
+          "Define routes",
+          "Use request and response models",
+          "Validate input",
+          "Use dependency injection",
+          "Connect FastAPI to a database"
+        ]
+      },
+      {
+        "id": "authentication",
+        "label": "Authentication & Authorization",
+        "description": "Secure backend applications using authentication and authorization mechanisms.",
+        "difficulty": 3.0,
+        "prerequisites": [
+          "http",
+          "fastapi"
+        ],
+        "learning_objectives": [
+          "Understand authentication vs authorization",
+          "Understand sessions",
+          "Understand tokens",
+          "Understand JWT basics",
+          "Implement protected endpoints",
+          "Understand role-based access control"
+        ]
+      },
+      {
+        "id": "async",
+        "label": "Asynchronous Programming",
+        "description": "Understand asynchronous execution and concurrency in backend applications.",
+        "difficulty": 3.5,
+        "prerequisites": [
+          "programming-fundamentals",
+          "fastapi"
+        ],
+        "learning_objectives": [
+          "Understand synchronous vs asynchronous execution",
+          "Understand async and await",
+          "Understand concurrency",
+          "Understand I/O-bound workloads",
+          "Use asynchronous endpoints appropriately"
+        ]
+      },
+      {
+        "id": "testing",
+        "label": "Backend Testing",
+        "description": "Test backend applications for correctness and reliability.",
+        "difficulty": 3.0,
+        "prerequisites": [
+          "fastapi"
+        ],
+        "learning_objectives": [
+          "Write unit tests",
+          "Write API tests",
+          "Understand test fixtures",
+          "Test failure cases",
+          "Understand mocking",
+          "Measure test coverage"
+        ]
+      },
+      {
+        "id": "caching",
+        "label": "Caching",
+        "description": "Improve backend performance using caching strategies.",
+        "difficulty": 3.5,
+        "prerequisites": [
+          "fastapi"
+        ],
+        "learning_objectives": [
+          "Understand why caching is used",
+          "Understand cache invalidation",
+          "Understand TTL",
+          "Use Redis as a cache",
+          "Identify appropriate caching opportunities"
+        ]
+      },
+      {
+        "id": "docker",
+        "label": "Docker",
+        "description": "Containerize backend applications using Docker.",
+        "difficulty": 3.0,
+        "prerequisites": [
+          "linux",
+          "fastapi"
+        ],
+        "learning_objectives": [
+          "Understand containers",
+          "Write Dockerfiles",
+          "Build images",
+          "Run containers",
+          "Use environment variables",
+          "Understand Docker networking basics"
+        ]
+      },
+      {
+        "id": "deployment",
+        "label": "Application Deployment",
+        "description": "Deploy backend applications to a production environment.",
+        "difficulty": 3.5,
+        "prerequisites": [
+          "docker"
+        ],
+        "learning_objectives": [
+          "Understand production configuration",
+          "Deploy containerized applications",
+          "Configure environment variables",
+          "Understand domains and HTTPS",
+          "Understand basic CI/CD"
+        ]
+      },
+      {
+        "id": "monitoring",
+        "label": "Logging & Monitoring",
+        "description": "Observe backend applications and diagnose production problems.",
+        "difficulty": 3.5,
+        "prerequisites": [
+          "deployment"
+        ],
+        "learning_objectives": [
+          "Implement structured logging",
+          "Understand application metrics",
+          "Monitor errors",
+          "Understand health checks",
+          "Diagnose production failures"
+        ]
+      },
+      {
+        "id": "security",
+        "label": "Backend Security",
+        "description": "Apply security principles to backend applications.",
+        "difficulty": 4.0,
+        "prerequisites": [
+          "authentication",
+          "deployment"
+        ],
+        "learning_objectives": [
+          "Understand common web vulnerabilities",
+          "Prevent injection attacks",
+          "Understand secure authentication",
+          "Protect sensitive configuration",
+          "Understand HTTPS",
+          "Apply least privilege"
+        ]
+      },
+      {
+        "id": "scaling",
+        "label": "Backend Scaling",
+        "description": "Understand techniques for scaling backend applications.",
+        "difficulty": 4.0,
+        "prerequisites": [
+          "deployment",
+          "caching",
+          "monitoring"
+        ],
+        "learning_objectives": [
+          "Understand horizontal scaling",
+          "Understand load balancing",
+          "Understand database scaling",
+          "Understand caching at scale",
+          "Identify backend bottlenecks"
+        ]
+      }
+    ]
+  }

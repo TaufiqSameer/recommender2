@@ -1,0 +1,26 @@
+{
+    "domain": "backend",
+    "version": "backend-roles-v1",
+    "roles": [
+      {
+        "id": "backend-engineer",
+        "label": "Backend Engineer",
+        "description": "Build, maintain, secure, and deploy backend applications and APIs.",
+        "required_skills": [
+          "programming-fundamentals",
+          "git",
+          "linux",
+          "networking",
+          "http",
+          "rest",
+          "api-design",
+          "sql",
+          "postgresql",
+          "fastapi",
+          "authentication",
+          "docker",
+          "deployment"
+        ]
+      }
+    ]
+  }
