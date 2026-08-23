@@ -9,10 +9,12 @@ class Settings(BaseSettings):
     llm_provider: str = "gemini"
     gemini_api_key: str | None = None
     ollama_model: str = "qwen3:8b"
+    google_model : str = "gemini-3.6-flash"
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        extra="ignore"
     )
 
 
