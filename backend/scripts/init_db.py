@@ -1,7 +1,8 @@
 from app.db.database import Base, engine
 
-# Import models so SQLAlchemy registers them with Base.
 from app.db.models import (
+    Assessment,
+    AssessmentQuestion,
     LearnerProfile,
     LearnerSkillState,
     SkillEdge,

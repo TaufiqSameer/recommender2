@@ -12,6 +12,12 @@ from app.db.models.skill import (
 from app.db.models.knowledge import (
     KnowledgeCandidate,
 )
+from app.db.models.assessment import (
+    Assessment,
+    AssessmentQuestion,
+    AssessmentAttempt,
+    AssessmentAnswer,
+)
 
 __all__ = [
     "LearnerEvidence",
@@ -19,5 +25,8 @@ __all__ = [
     "LearnerSkillState",
     "SkillEdge",
     "SkillNode",
-    "KnowledgeCandidate",
+    "Assessment",
+    "AssessmentQuestion",
+    "AssessmentAttempt",
+    "AssessmentAnswer",
 ]
