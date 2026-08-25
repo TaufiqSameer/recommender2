@@ -19,6 +19,10 @@ from app.db.models.assessment import (
     AssessmentAnswer,
 )
 
+from app.db.models.learning_activity import (
+    LearningActivity,
+)
+
 __all__ = [
     "LearnerEvidence",
     "LearnerProfile",
@@ -29,4 +33,5 @@ __all__ = [
     "AssessmentQuestion",
     "AssessmentAttempt",
     "AssessmentAnswer",
+    "LearningActivity",
 ]

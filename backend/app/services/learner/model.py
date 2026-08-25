@@ -131,10 +131,7 @@ class LearnerModelService:
         if mastery >= 0.85:
             return "mastered"
 
-        if attempts == 1:
-            return "learning"
-
-        if mastery >= 0.50:
+        if attempts > 0:
             return "learning"
 
         return "available"

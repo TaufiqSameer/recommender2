@@ -1,165 +1,98 @@
+from app.services.learning.adaptive_loop import (
+    AdaptiveLearningService,
+)
 from app.db.database import SessionLocal
 
-from app.services.learning.feedback import (
-    LearningFeedbackService,
-)
 
-from app.services.learning.recommender import (
-    LearningRecommender,
-)
-
-from app.services.learning.candidate_selector import (
-    CandidateSelector,
-)
+LEARNER_ID = "adaptive-loop-test-002"
 
 
-def print_recommendations(
-    title,
-    recommendations,
-):
-    print(f"\n=== {title} ===")
+def build_learner_answer(
+    skill_id: str,
+) -> str:
 
-    if not recommendations:
-        print("No recommendations.")
-        return
+    # =====================================================
+    # Simulated learner responses
+    #
+    # These are deliberately written to match the skill
+    # selected by the recommender.
+    # =====================================================
 
-    for index, recommendation in enumerate(
-        recommendations,
-        start=1,
-    ):
+    if skill_id == "programming-fundamentals":
 
-        print(
-            f"\n{index}. "
-            f"{recommendation.skill.label}"
-        )
+        return """
+user_name = "Sameer"
+user_age = 21
+user_height = 5.9
+is_enrolled = True
 
-        print(
-            f"   ID: "
-            f"{recommendation.skill.id}"
-        )
+print(user_name, type(user_name))
+print(user_age, type(user_age))
+print(user_height, type(user_height))
+print(is_enrolled, type(is_enrolled))
+"""
 
-        print(
-            f"   Score: "
-            f"{recommendation.score:.3f}"
-        )
+    if skill_id == "fastapi":
 
-        print(
-            f"   Reason: "
-            f"{recommendation.reason}"
-        )
+        return """
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
 
 
-def get_candidate_ids(candidates):
-    """
-    Convert LearningCandidate objects into
-    a set of skill IDs.
+class Item(BaseModel):
+    name: str
+    price: float
 
-    Example:
 
-        [
-            LearningCandidate(skill=HTTP),
-            LearningCandidate(skill=REST)
-        ]
-
-    becomes:
-
-        {
-            "http",
-            "rest"
-        }
-    """
+@app.get("/")
+def root():
 
     return {
-        candidate.skill.id
-        for candidate in candidates
+        "message": "Welcome to FastAPI"
     }
 
 
-def print_graph_state_before(candidates):
-    """
-    Show whether HTTP's dependent skills are
-    currently eligible.
-    """
-
-    candidate_ids = get_candidate_ids(
-        candidates
-    )
-
-    print(
-        "\n=== GRAPH STATE BEFORE FEEDBACK ==="
-    )
-
-    print(
-        "REST:",
-        "ELIGIBLE"
-        if "rest" in candidate_ids
-        else "BLOCKED",
-    )
-
-    print(
-        "Authentication:",
-        "ELIGIBLE"
-        if "authentication" in candidate_ids
-        else "BLOCKED",
-    )
-
-
-def print_graph_transition(
-    before_candidates,
-    after_candidates,
+@app.post("/items/")
+def create_item(
+    item: Item,
 ):
-    """
-    Compare graph eligibility before and
-    after learner feedback.
-    """
 
-    before_ids = get_candidate_ids(
-        before_candidates
-    )
+    tax = item.price * 0.10
 
-    after_ids = get_candidate_ids(
-        after_candidates
-    )
+    return {
+        "name": item.name,
+        "price": item.price,
+        "tax": tax,
+    }
+"""
 
-    print(
-        "\n=== GRAPH TRANSITION ==="
-    )
+    if skill_id == "rest":
 
-    # -----------------------------------------
-    # REST
-    # -----------------------------------------
+        return """
+A REST API should use HTTP methods according to
+the operation being performed.
 
-    print(
-        "REST before:",
-        "YES"
-        if "rest" in before_ids
-        else "NO",
-    )
+GET is used to retrieve data.
 
-    print(
-        "REST after:",
-        "YES"
-        if "rest" in after_ids
-        else "NO",
-    )
+POST is used to create a new resource.
 
-    # -----------------------------------------
-    # Authentication
-    # -----------------------------------------
+PUT can replace an existing resource.
 
-    print(
-        "Authentication before:",
-        "YES"
-        if "authentication" in before_ids
-        else "NO",
-    )
+PATCH can partially update an existing resource.
 
-    print(
-        "Authentication after:",
-        "YES"
-        if "authentication" in after_ids
-        else "NO",
-    )
+DELETE removes a resource.
+"""
+
+    # -----------------------------------------------------
+    # Fallback
+    # -----------------------------------------------------
+
+    return """
+I completed the requested learning activity
+and attempted all of the required steps.
+"""
 
 
 def main():
@@ -168,155 +101,385 @@ def main():
 
     try:
 
-        learner_id = "learner-001"
-
-        # -----------------------------------------
-        # Services
-        # -----------------------------------------
-
-        recommender = LearningRecommender(
-            db
+        service = (
+            AdaptiveLearningService(db)
         )
 
-        feedback = LearningFeedbackService(
-            db
-        )
-
-        selector = CandidateSelector(
-            db
-        )
-
-        # =====================================================
+        # =================================================
         # STEP 1
-        # Recommendations BEFORE feedback
-        # =====================================================
+        # RECOMMENDER + GEMINI ACTIVITY
+        # =================================================
 
-        before = recommender.recommend(
-            learner_id=learner_id,
-            limit=5,
+        print(
+            "\n"
+            + "=" * 70
         )
 
-        print_recommendations(
-            "RECOMMENDATIONS BEFORE FEEDBACK",
-            before,
+        print(
+            "STEP 1 — GENERATE NEXT ACTIVITY"
         )
 
-        # =====================================================
+        print(
+            "=" * 70
+        )
+
+        generated = (
+            service.generate_next_activity(
+                LEARNER_ID
+            )
+        )
+
+        if generated is None:
+
+            print(
+                "\nNo learning activity available."
+            )
+
+            return
+
+        recommendation = (
+            generated.recommendation
+        )
+
+        activity = (
+            generated.activity
+        )
+
+        skill = (
+            recommendation.skill
+        )
+
+        print(
+            "\nRecommended skill:"
+        )
+        print(
+    "\nActivity ID:"
+)
+
+        print(
+            f"  {generated.activity_id}"
+        )
+
+        print(
+            f"  {skill.label}"
+        )
+
+        print(
+            f"\nSkill ID:"
+        )
+
+        print(
+            f"  {skill.id}"
+        )
+
+        print(
+            f"\nRecommendation score:"
+        )
+
+        print(
+            f"  {recommendation.score:.3f}"
+        )
+
+        print(
+            f"\nRecommendation reason:"
+        )
+
+        print(
+            f"  {recommendation.reason}"
+        )
+
+        print(
+            "\nGenerated activity:"
+        )
+
+        print(
+            f"  {activity.title}"
+        )
+
+        print(
+            "\nActivity objective:"
+        )
+
+        print(
+            f"  {activity.objective}"
+        )
+
+        print(
+            "\nActivity difficulty:"
+        )
+
+        print(
+            f"  {activity.difficulty}"
+        )
+
+        print(
+            "\nActivity instructions:"
+        )
+
+        print(
+            f"  {activity.instructions}"
+        )
+
+        # =================================================
         # STEP 2
-        # Candidate graph BEFORE feedback
-        # =====================================================
+        # SIMULATED LEARNER ANSWER
+        # =================================================
 
-        candidates_before = (
-            selector.get_candidates(
-                learner_id
+        learner_answer = (
+            build_learner_answer(
+                skill.id
             )
         )
 
-        print_graph_state_before(
-            candidates_before
+        print(
+            "\n"
+            + "=" * 70
         )
 
-        # =====================================================
+        print(
+            "STEP 2 — LEARNER SUBMITS ANSWER"
+        )
+
+        print(
+            "=" * 70
+        )
+
+        print(
+            "\nLearner answer:"
+        )
+
+        print(
+            learner_answer
+        )
+
+        # =================================================
         # STEP 3
-        # Simulate learner completing an
-        # HTTP assessment.
-        #
-        # A high score should increase HTTP
-        # mastery.
-        # =====================================================
+        # GEMINI EVALUATES
+        # =================================================
 
-        result = feedback.process(
-            learner_id=learner_id,
-            skill_id="http",
-            score=0.95,
-            evidence_type="assessment",
-            source_id="http-adaptive-test-001",
-            metadata={
-                "assessment_id":
-                    "http-adaptive-test-001",
-            },
+        evaluation = service.evaluate_response(
+            learner_id=LEARNER_ID,
+            activity_id=generated.activity_id,
+            learner_answer=learner_answer,
         )
 
-        # =====================================================
+        print(
+            "\n"
+            + "=" * 70
+        )
+
+        print(
+            "STEP 3 — GEMINI EVALUATION"
+        )
+
+        print(
+            "=" * 70
+        )
+
+        print(
+            f"\nScore:"
+        )
+
+        print(
+            f"  "
+            f"{evaluation.evaluation.score:.3f}"
+        )
+
+        print(
+            f"\nCorrect:"
+        )
+
+        print(
+            f"  "
+            f"{evaluation.evaluation.correct}"
+        )
+
+        print(
+            "\nFeedback:"
+        )
+
+        print(
+            f"  "
+            f"{evaluation.evaluation.feedback}"
+        )
+
+        print(
+            "\nStrengths:"
+        )
+
+        for strength in (
+            evaluation.evaluation.strengths
+        ):
+
+            print(
+                f"  + {strength}"
+            )
+
+        print(
+            "\nWeaknesses:"
+        )
+
+        for weakness in (
+            evaluation.evaluation.weaknesses
+        ):
+
+            print(
+                f"  - {weakness}"
+            )
+
+        print(
+            "\nNext step:"
+        )
+
+        print(
+            f"  "
+            f"{evaluation.evaluation.next_step}"
+        )
+
+        # =================================================
         # STEP 4
-        # Show updated learner state
-        # =====================================================
+        # UPDATED LEARNER STATE
+        # =================================================
 
-        print(
-            "\n=== UPDATED LEARNER STATE ==="
-        )
-
-        state = result.state
-
-        print(
-            f"Learner: "
-            f"{state.learner_id}"
+        state = (
+            evaluation.feedback.state
         )
 
         print(
-            f"Skill: "
-            f"{state.skill_id}"
+            "\n"
+            + "=" * 70
         )
 
         print(
-            f"Mastery: "
-            f"{state.mastery:.3f}"
+            "STEP 4 — UPDATED LEARNER STATE"
         )
 
         print(
-            f"Theta: "
-            f"{state.theta:.3f}"
+            "=" * 70
         )
 
         print(
-            f"Confidence: "
-            f"{state.confidence:.3f}"
+            f"\nSkill:"
         )
 
         print(
-            f"Attempts: "
-            f"{state.attempts}"
+            f"  {state.skill_id}"
         )
 
         print(
-            f"Status: "
-            f"{state.status}"
+            f"\nMastery:"
         )
 
-        # =====================================================
+        print(
+            f"  {state.mastery:.3f}"
+        )
+
+        print(
+            f"\nTheta:"
+        )
+
+        print(
+            f"  {state.theta:.3f}"
+        )
+
+        print(
+            f"\nConfidence:"
+        )
+
+        print(
+            f"  {state.confidence:.3f}"
+        )
+
+        print(
+            f"\nAttempts:"
+        )
+
+        print(
+            f"  {state.attempts}"
+        )
+
+        print(
+            f"\nStatus:"
+        )
+
+        print(
+            f"  {state.status}"
+        )
+
+        # =================================================
         # STEP 5
-        # Recalculate candidates AFTER feedback
-        #
-        # IMPORTANT:
-        #
-        # CandidateSelector queries the database again,
-        # so it sees the UPDATED learner state.
-        # =====================================================
+        # RECOMMEND AGAIN
+        # =================================================
 
-        candidates_after = (
-            selector.get_candidates(
-                learner_id
+        print(
+            "\n"
+            + "=" * 70
+        )
+
+        print(
+            "STEP 5 — NEXT RECOMMENDATION"
+        )
+
+        print(
+            "=" * 70
+        )
+
+        next_result = (
+            service.generate_next_activity(
+                LEARNER_ID
             )
         )
 
-        print_graph_transition(
-            candidates_before,
-            candidates_after,
+        if next_result is None:
+
+            print(
+                "\nNo next recommendation available."
+            )
+
+            return
+
+        next_recommendation = (
+            next_result.recommendation
         )
 
-        # =====================================================
-        # STEP 6
-        # Generate recommendations AFTER feedback
-        # =====================================================
-
-        after = recommender.recommend(
-            learner_id=learner_id,
-            limit=5,
+        print(
+            "\nNext recommended skill:"
         )
 
-        print_recommendations(
-            "RECOMMENDATIONS AFTER FEEDBACK",
-            after,
+        print(
+            f"  "
+            f"{next_recommendation.skill.label}"
+        )
+
+        print(
+            f"\nNext score:"
+        )
+
+        print(
+            f"  "
+            f"{next_recommendation.score:.3f}"
+        )
+
+        print(
+            f"\nNext reason:"
+        )
+
+        print(
+            f"  "
+            f"{next_recommendation.reason}"
+        )
+
+        print(
+            "\n"
+            + "=" * 70
+        )
+
+        print(
+            "ADAPTIVE LOOP COMPLETE"
+        )
+
+        print(
+            "=" * 70
         )
 
     finally:

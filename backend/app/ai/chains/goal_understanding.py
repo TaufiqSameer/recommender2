@@ -4,8 +4,8 @@ from app.ai.llm.provider import (
     get_learner_intent_llm,
 )
 from app.ai.llm.prompts import (
-    LEARNER_INTENT_SYSTEM_PROMPT,
-    LEARNER_INTENT_USER_PROMPT,
+    LEARNING_ACTIVITY_SYSTEM_PROMPT,
+    LEARNING_ACTIVITY_USER_PROMPT,
 )
 from app.ai.llm.schemas import LearnerIntent
 

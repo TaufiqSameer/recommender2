@@ -1,9 +1,14 @@
 from fastapi import FastAPI
 
 from app.config import settings
+
 from app.db.database import Base, engine
 
-from app.db import models 
+from app.db import models
+
+from app.api.routes.learning import (
+    router as learning_router,
+)
 
 
 app = FastAPI(
@@ -12,6 +17,14 @@ app = FastAPI(
 )
 
 
+app.include_router(
+    learning_router
+)
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+
+    return {
+        "status": "ok"
+    }

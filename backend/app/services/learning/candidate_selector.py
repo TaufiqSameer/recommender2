@@ -11,16 +11,14 @@ from app.db.models import (
 )
 
 
+
 @dataclass
 class LearningCandidate:
-    """
-    A skill that the learner is currently eligible to learn.
-    """
-
     skill: SkillNode
     mastery: float | None
     prerequisites_satisfied: bool
     prerequisite_count: int
+    prerequisite_ids: list[str]
     unlocked_skill_count: int
 
 
@@ -306,6 +304,7 @@ class CandidateSelector:
                     prerequisite_count=len(
                         eligibility.prerequisites
                     ),
+                    prerequisite_ids=list(eligibility.prerequisites),
                     unlocked_skill_count=(
                         unlocked_skill_count
                     ),

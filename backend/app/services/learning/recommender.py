@@ -13,12 +13,22 @@ from app.services.learning.candidate_selector import (
     LearningCandidate,
 )
 
+@dataclass
+class ScoreBreakdown:
+    level_fit: float
+    mastery_gap: float
+    prerequisite_readiness: float
+    unlock_value: float
+    exploration: float
+    final_score: float
+
 
 @dataclass
 class Recommendation:
     skill: SkillNode
     score: float
     reason: str
+    breakdown: ScoreBreakdown
 
 
 class LearningRecommender:
@@ -27,32 +37,29 @@ class LearningRecommender:
     # SCORE WEIGHTS
     # =========================================================
     #
-    # Final score:
+    # The recommendation score is composed of:
     #
-    #   40% -> level fit
-    #   30% -> mastery gap
-    #   20% -> unlock value
-    #   10% -> confidence/readiness
+    #   30% -> learner / skill level fit
+    #   25% -> mastery opportunity
+    #   20% -> prerequisite readiness
+    #   20% -> graph unlock value
+    #    5% -> exploration / uncertainty
     #
-    # These weights are intentionally simple.
-    # Later we can tune them or replace the scoring
-    # function with a learned ranking model.
+    # All factors are normalized to [0, 1].
     #
 
-    LEVEL_WEIGHT = 0.40
-    MASTERY_GAP_WEIGHT = 0.30
-    UNLOCK_WEIGHT = 0.20
-    CONFIDENCE_WEIGHT = 0.10
+    LEVEL_WEIGHT = 0.30
+    MASTERY_GAP_WEIGHT = 0.25
+    PREREQUISITE_WEIGHT = 0.20
+    UNLOCK_WEIGHT = 0.15
+    EXPLORATION_WEIGHT = 0.10
 
-    # =========================================================
-    # MASTERY TARGET
-    # =========================================================
-
+    # Target mastery for a skill that is currently being learned.
     TARGET_MASTERY = 0.70
 
-    # =========================================================
-    # DIFFICULTY MAP
-    # =========================================================
+    # ---------------------------------------------------------
+    # Difficulty normalization
+    # ---------------------------------------------------------
 
     DIFFICULTY_MAP = {
         "beginner": 0.25,
@@ -87,34 +94,24 @@ class LearningRecommender:
     ) -> list[Recommendation]:
 
         # -----------------------------------------------------
-        # 1. Get CURRENT candidates
+        # 1. Get CURRENT eligible candidates
         # -----------------------------------------------------
-        #
-        # CandidateSelector reloads the learner state and
-        # skill graph every time.
-        #
-        # Therefore:
-        #
-        # assessment
-        #     ↓
-        # learner state changes
-        #     ↓
-        # recommend()
-        #     ↓
-        # fresh candidates
-        #
-        # No cached candidate list is used here.
-        #
 
         candidates = self.selector.get_candidates(
             learner_id
         )
 
         if not candidates:
+
             return []
 
         # -----------------------------------------------------
         # 2. Load CURRENT learner states
+        #
+        # This is deliberately performed every time.
+        #
+        # Feedback can modify the learner model immediately
+        # before recommend() is called.
         # -----------------------------------------------------
 
         states = {
@@ -129,12 +126,8 @@ class LearningRecommender:
         }
 
         # -----------------------------------------------------
-        # 3. Calculate learner ability
+        # 3. Calculate learner's current ability
         # -----------------------------------------------------
-        #
-        # We use the learner's known skill mastery as a
-        # simple estimate of their current ability.
-        #
 
         learner_ability = (
             self._calculate_learner_ability(
@@ -143,11 +136,8 @@ class LearningRecommender:
         )
 
         # -----------------------------------------------------
-        # 4. Find maximum unlock value
+        # 4. Find maximum graph unlock value
         # -----------------------------------------------------
-        #
-        # Used to normalize unlocked_skill_count into [0, 1].
-        #
 
         max_unlocks = max(
             (
@@ -158,12 +148,10 @@ class LearningRecommender:
         )
 
         # -----------------------------------------------------
-        # 5. Build recommendations
+        # 5. Score every candidate
         # -----------------------------------------------------
 
-        recommendations: list[
-            Recommendation
-        ] = []
+        recommendations = []
 
         for candidate in candidates:
 
@@ -174,7 +162,7 @@ class LearningRecommender:
             )
 
             # =================================================
-            # A. LEVEL FIT
+            # A. LEARNER / LEVEL FIT
             # =================================================
 
             level_fit = (
@@ -186,23 +174,8 @@ class LearningRecommender:
             )
 
             # =================================================
-            # B. MASTERY GAP
+            # B. MASTERY OPPORTUNITY
             # =================================================
-            #
-            # A learner with low mastery has more to gain
-            # from learning the skill.
-            #
-            # Example:
-            #
-            # mastery = 0.10
-            # gap     = 0.90
-            #
-            # mastery = 0.65
-            # gap     = 0.35
-            #
-            # No evidence means the learner has a full
-            # learning opportunity.
-            #
 
             mastery_gap = (
                 self._calculate_mastery_gap(
@@ -211,32 +184,39 @@ class LearningRecommender:
             )
 
             # =================================================
-            # C. UNLOCK VALUE
+            # C. PREREQUISITE READINESS
             # =================================================
 
-            if max_unlocks == 0:
-
-                unlock_value = 0.0
-
-            else:
-
-                unlock_value = (
-                    candidate.unlocked_skill_count
-                    / max_unlocks
+            prerequisite_readiness = (
+                self._calculate_prerequisite_readiness(
+                    candidate=candidate,
+                    learner_states=states,
                 )
+            )
 
             # =================================================
-            # D. CONFIDENCE / READINESS
+            # D. UNLOCK VALUE
             # =================================================
 
-            confidence_value = (
-                self._calculate_confidence_value(
+            unlock_value = (
+                self._calculate_unlock_value(
+                    candidate=candidate,
+                    max_unlocks=max_unlocks,
+                )
+            )
+
+            # =================================================
+            # E. EXPLORATION / UNCERTAINTY
+            # =================================================
+
+            exploration_value = (
+                self._calculate_exploration_value(
                     state
                 )
             )
 
             # =================================================
-            # E. FINAL SCORE
+            # F. FINAL SCORE
             # =================================================
 
             score = (
@@ -251,17 +231,22 @@ class LearningRecommender:
 
                 +
 
+                self.PREREQUISITE_WEIGHT
+                * prerequisite_readiness
+
+                +
+
                 self.UNLOCK_WEIGHT
                 * unlock_value
 
                 +
 
-                self.CONFIDENCE_WEIGHT
-                * confidence_value
+                self.EXPLORATION_WEIGHT
+                * exploration_value
             )
 
             # -------------------------------------------------
-            # Keep score inside [0, 1]
+            # Clamp score to [0, 1]
             # -------------------------------------------------
 
             score = max(
@@ -273,7 +258,7 @@ class LearningRecommender:
             )
 
             # =================================================
-            # F. EXPLANATION
+            # G. EXPLANATION
             # =================================================
 
             reason = self._build_reason(
@@ -281,8 +266,22 @@ class LearningRecommender:
                 state=state,
                 level_fit=level_fit,
                 mastery_gap=mastery_gap,
+                prerequisite_readiness=(
+                    prerequisite_readiness
+                ),
                 unlock_value=unlock_value,
-                confidence_value=confidence_value,
+                exploration_value=(
+                    exploration_value
+                ),
+            )
+
+            breakdown = ScoreBreakdown(
+                level_fit=level_fit,
+                mastery_gap=mastery_gap,
+                prerequisite_readiness=prerequisite_readiness,
+                unlock_value=unlock_value,
+                exploration=exploration_value,
+                final_score=score,
             )
 
             recommendations.append(
@@ -290,12 +289,13 @@ class LearningRecommender:
                     skill=skill,
                     score=score,
                     reason=reason,
+                    breakdown=breakdown,
                 )
             )
 
-        # =====================================================
-        # 6. Sort highest score first
-        # =====================================================
+        # -----------------------------------------------------
+        # 6. Highest score first
+        # -----------------------------------------------------
 
         recommendations.sort(
             key=lambda recommendation:
@@ -303,9 +303,9 @@ class LearningRecommender:
             reverse=True,
         )
 
-        # =====================================================
-        # 7. Return requested number
-        # =====================================================
+        # -----------------------------------------------------
+        # 7. Return top N
+        # -----------------------------------------------------
 
         return recommendations[:limit]
 
@@ -323,9 +323,10 @@ class LearningRecommender:
 
         if not states:
 
-            # No learner history.
+            # No evidence means we have no strong estimate
+            # of learner ability.
             #
-            # Start at the middle of the ability scale.
+            # Use the neutral midpoint.
 
             return 0.50
 
@@ -343,6 +344,15 @@ class LearningRecommender:
         if not masteries:
 
             return 0.50
+
+        # -----------------------------------------------------
+        # For now, use the average observed mastery.
+        #
+        # This is our baseline learner ability model.
+        #
+        # Later we can replace this with a more principled
+        # theta-based ability estimator.
+        # -----------------------------------------------------
 
         return (
             sum(masteries)
@@ -366,14 +376,14 @@ class LearningRecommender:
 
         skill = candidate.skill
 
-        # -----------------------------------------------------
-        # If the learner already has evidence for the skill,
-        # use that mastery as a direct signal.
-        # -----------------------------------------------------
-
         state = learner_states.get(
             skill.id
         )
+
+        # -----------------------------------------------------
+        # If the learner already has evidence for this skill,
+        # measure how close the skill is to the learning zone.
+        # -----------------------------------------------------
 
         if state is not None:
 
@@ -385,10 +395,13 @@ class LearningRecommender:
                 ),
             )
 
-            # We want candidates that are still learnable,
-            # but not completely unfamiliar.
+            # Around 0.50 is considered a useful learning zone.
             #
-            # Around 0.50 is considered a good learning zone.
+            # Too close to 0:
+            #     learner may lack prerequisites / foundation.
+            #
+            # Too close to 1:
+            #     learner is already nearly done.
 
             distance = abs(
                 mastery - 0.50
@@ -402,9 +415,10 @@ class LearningRecommender:
             )
 
         # -----------------------------------------------------
-        # No evidence for this skill.
+        # No evidence:
         #
-        # Compare learner ability against skill difficulty.
+        # Compare candidate difficulty against estimated
+        # learner ability.
         # -----------------------------------------------------
 
         difficulty = (
@@ -432,8 +446,12 @@ class LearningRecommender:
         state: LearnerSkillState | None,
     ) -> float:
 
-        # No evidence means the learner has not started
-        # learning this skill yet.
+        # -----------------------------------------------------
+        # No evidence:
+        #
+        # The learner has a large opportunity to learn this
+        # skill.
+        # -----------------------------------------------------
 
         if state is None:
 
@@ -461,31 +479,132 @@ class LearningRecommender:
         )
 
     # =========================================================
-    # CONFIDENCE
+    # PREREQUISITE READINESS
     # =========================================================
 
     @staticmethod
-    def _calculate_confidence_value(
-        state: LearnerSkillState | None,
+    def _calculate_prerequisite_readiness(
+        *,
+        candidate: LearningCandidate,
+        learner_states: dict[
+            str,
+            LearnerSkillState,
+        ],
     ) -> float:
 
-        # No evidence means we don't know much about the
-        # learner yet.
-        #
-        # Give it a neutral value instead of automatically
-        # rewarding or penalizing it.
+        # -----------------------------------------------------
+        # No prerequisites
+        # -----------------------------------------------------
 
-        if state is None:
+        if not candidate.prerequisite_ids:
+
+            # No prerequisite means the candidate is freely
+            # available from the graph perspective.
+            #
+            # 0.50 keeps prerequisite readiness neutral rather
+            # than artificially rewarding prerequisite-free
+            # skills.
+            #
 
             return 0.50
 
+        prerequisite_masteries = []
+
+        for prerequisite_id in (
+            candidate.prerequisite_ids
+        ):
+
+            state = learner_states.get(
+                prerequisite_id
+            )
+
+            if state is None:
+
+                # CandidateSelector should normally prevent
+                # this situation.
+
+                return 0.0
+
+            mastery = max(
+                0.0,
+                min(
+                    1.0,
+                    state.mastery,
+                ),
+            )
+
+            prerequisite_masteries.append(
+                mastery
+            )
+
+        # -----------------------------------------------------
+        # STRICT AND semantics
+        #
+        # The weakest prerequisite determines readiness.
+        # -----------------------------------------------------
+
+        return min(
+            prerequisite_masteries
+        )
+
+    # =========================================================
+    # UNLOCK VALUE
+    # =========================================================
+
+    @staticmethod
+    def _calculate_unlock_value(
+        *,
+        candidate: LearningCandidate,
+        max_unlocks: int,
+    ) -> float:
+
+        if max_unlocks <= 0:
+
+            return 0.0
+
         return max(
+            0.0,
+            min(
+                1.0,
+                candidate.unlocked_skill_count
+                / max_unlocks,
+            ),
+        )
+
+    # =========================================================
+    # EXPLORATION / UNCERTAINTY
+    # =========================================================
+
+    @staticmethod
+    def _calculate_exploration_value(
+        state: LearnerSkillState | None,
+    ) -> float:
+
+        # -----------------------------------------------------
+        # No evidence:
+        #
+        # We know very little about this skill.
+        #
+        # Therefore it has high information value.
+        # -----------------------------------------------------
+
+        if state is None:
+
+            return 1.0
+
+        confidence = max(
             0.0,
             min(
                 1.0,
                 state.confidence,
             ),
         )
+
+        # -----------------------------------------------------
+        # Low confidence = high uncertainty = more exploration.
+        # -----------------------------------------------------
+
+        return 1.0 - confidence
 
     # =========================================================
     # DIFFICULTY
@@ -499,8 +618,6 @@ class LearningRecommender:
         if difficulty is None:
 
             return 0.50
-
-        # Handle enum-like values.
 
         value = getattr(
             difficulty,
@@ -528,14 +645,15 @@ class LearningRecommender:
         state: LearnerSkillState | None,
         level_fit: float,
         mastery_gap: float,
+        prerequisite_readiness: float,
         unlock_value: float,
-        confidence_value: float,
+        exploration_value: float,
     ) -> str:
 
         reasons = []
 
         # -----------------------------------------------------
-        # Evidence / mastery
+        # Current evidence
         # -----------------------------------------------------
 
         if state is None:
@@ -570,12 +688,35 @@ class LearningRecommender:
         else:
 
             reasons.append(
-                "its difficulty is somewhat different "
-                "from your current level"
+                "its difficulty differs from your current level"
             )
 
         # -----------------------------------------------------
-        # Mastery gap
+        # Prerequisite readiness
+        # -----------------------------------------------------
+
+        if candidate.prerequisite_count > 0:
+
+            if prerequisite_readiness >= 0.90:
+
+                reasons.append(
+                    "its prerequisites are strongly mastered"
+                )
+
+            elif prerequisite_readiness >= 0.70:
+
+                reasons.append(
+                    "its prerequisites are sufficiently mastered"
+                )
+
+            else:
+
+                reasons.append(
+                    "its prerequisites are only partially prepared"
+                )
+
+        # -----------------------------------------------------
+        # Mastery opportunity
         # -----------------------------------------------------
 
         if mastery_gap >= 0.70:
@@ -588,13 +729,6 @@ class LearningRecommender:
 
             reasons.append(
                 "there is still meaningful room to improve"
-            )
-
-        else:
-
-            reasons.append(
-                "you are already relatively close "
-                "to the mastery target"
             )
 
         # -----------------------------------------------------
@@ -625,7 +759,25 @@ class LearningRecommender:
             )
 
         # -----------------------------------------------------
-        # Combine explanation
+        # Exploration
+        # -----------------------------------------------------
+
+        if exploration_value >= 0.80:
+
+            reasons.append(
+                "there is significant uncertainty "
+                "about your current ability"
+            )
+
+        elif exploration_value >= 0.40:
+
+            reasons.append(
+                "there is still some uncertainty "
+                "about your current ability"
+            )
+
+        # -----------------------------------------------------
+        # Final explanation
         # -----------------------------------------------------
 
         if not reasons:
@@ -635,24 +787,16 @@ class LearningRecommender:
                 "for learning."
             )
 
-        if len(reasons) == 1:
-
-            return (
-                reasons[0].capitalize()
-                + "."
-            )
-
-        reason = (
+        result = (
             reasons[0].capitalize()
         )
 
-        reason += ", "
+        if len(reasons) > 1:
 
-        reason += ", ".join(
-            reasons[1:]
-        )
+            result += ", "
 
-        return (
-            reason
-            + "."
-        )
+            result += ", ".join(
+                reasons[1:]
+            )
+
+        return result + "."
