@@ -5,11 +5,21 @@ from app.api.schemas.learning import (
     ActivitySubmission,
 )
 
+from sqlalchemy import select
+
+from app.db.models import (
+    LearnerSkillState,
+    LearningActivity,
+)
+
 from app.db.database import get_db
 
 from app.services.learning.adaptive_loop import (
     AdaptiveLearningService,
 )
+from sqlalchemy import select
+
+from app.db.models import LearnerSkillState
 
 
 router = APIRouter(
@@ -212,4 +222,109 @@ def submit_activity(
                 result.feedback.state.status
             ),
         },
+    }
+    
+@router.get(
+    "/{learner_id}/state"
+)
+def get_learner_state(
+    learner_id: str,
+    db: Session = Depends(get_db),
+):
+    states = list(
+        db.scalars(
+            select(LearnerSkillState)
+            .where(
+                LearnerSkillState.learner_id
+                == learner_id
+            )
+        ).all()
+    )
+
+    return {
+        "learner_id": learner_id,
+        "skills": [
+            {
+                "skill_id": state.skill_id,
+                "mastery": state.mastery,
+                "theta": state.theta,
+                "confidence": state.confidence,
+                "attempts": state.attempts,
+                "status": state.status,
+                "last_assessed_at": (
+                    state.last_assessed_at
+                ),
+            }
+            for state in states
+        ],
+    }
+    
+@router.get(
+    "/{learner_id}/activities"
+)
+def get_activity_history(
+    learner_id: str,
+    db: Session = Depends(get_db),
+):
+    activities = list(
+        db.scalars(
+            select(LearningActivity)
+            .where(
+                LearningActivity.learner_id
+                == learner_id
+            )
+            .order_by(
+                LearningActivity.created_at.desc()
+            )
+        ).all()
+    )
+
+    return {
+        "learner_id": learner_id,
+        "activities": [
+            {
+                "activity_id": activity.id,
+
+                "skill_id": (
+                    activity.skill_id
+                ),
+
+                "title": (
+                    activity.title
+                ),
+
+                "type": (
+                    activity.activity_type
+                ),
+
+                "objective": (
+                    activity.objective
+                ),
+
+                "difficulty": (
+                    activity.difficulty
+                ),
+
+                "instructions": (
+                    activity.instructions
+                ),
+
+                "hints": (
+                    activity.hints
+                ),
+
+                "recommendation_score": (
+                    activity.recommendation_score
+                ),
+
+                "generation_source": (
+                    activity.generation_source
+                ),
+
+                "created_at": (
+                    activity.created_at
+                ),
+            }
+            for activity in activities
+        ],
     }
