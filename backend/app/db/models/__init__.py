@@ -1,3 +1,5 @@
+from app.db.models.user import User
+
 from app.db.models.learner import (
     LearnerEvidence,
     LearnerProfile,
@@ -23,7 +25,13 @@ from app.db.models.learning_activity import (
     LearningActivity,
 )
 
+from app.db.models.chat import (
+    ChatSession,
+    ChatMessage,
+)
+
 __all__ = [
+    "User",
     "LearnerEvidence",
     "LearnerProfile",
     "LearnerSkillState",
@@ -34,4 +42,6 @@ __all__ = [
     "AssessmentAttempt",
     "AssessmentAnswer",
     "LearningActivity",
+    "ChatSession",
+    "ChatMessage",
 ]

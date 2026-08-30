@@ -80,6 +80,7 @@ export interface LearnerSkillState {
   export interface ActivityHistoryItem {
     activity_id: string;
     skill_id: string;
+    skill_label?: string;
     title: string;
     type: string;
     objective: string;
@@ -89,4 +90,34 @@ export interface LearnerSkillState {
     recommendation_score: number;
     generation_source: string;
     created_at: string;
+    completed?: boolean;
+    score?: number | null;
+  }
+
+  export interface ActivityHistoryResponse {
+    learner_id: string;
+    activities_completed: number;
+    activities: ActivityHistoryItem[];
+  }
+
+  export interface SubmitActivityResponse {
+    activity_id: string;
+  
+    evaluation: {
+      score: number;
+      correct: boolean;
+      feedback: string;
+      strengths: string[];
+      weaknesses: string[];
+      next_step: string;
+    };
+  
+    learner_state: {
+      skill_id: string;
+      mastery: number;
+      theta: number;
+      confidence: number;
+      attempts: number;
+      status: string;
+    };
   }

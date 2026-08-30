@@ -14,9 +14,9 @@ def get_llm():
             )
 
         return ChatGoogleGenerativeAI(
-            model="gemini-3.6-flash",
+            model=settings.google_model or "gemini-2.5-flash",
             google_api_key=settings.gemini_api_key,
-            temperature=0,
+            temperature=0.2,
         )
 
     if settings.llm_provider == "ollama":

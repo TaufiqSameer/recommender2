@@ -12,7 +12,7 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
 
@@ -23,6 +23,36 @@ class LearnerProfile(Base):
     learner_id: Mapped[str] = mapped_column(
         String(100),
         primary_key=True,
+    )
+
+    # FK to the authenticated user.
+    user_id: Mapped[str | None] = mapped_column(
+        String(100),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        unique=True,
+        index=True,
+    )
+
+    # Human-readable name (separate from auth username).
+    display_name: Mapped[str | None] = mapped_column(
+        String(200),
+        nullable=True,
+    )
+
+    # Onboarding state machine.
+    #
+    # NEW
+    # DISCOVERING_GOAL
+    # DISCOVERING_INTERESTS
+    # DISCOVERING_BACKGROUND
+    # ASSESSMENT
+    # PROFILE_READY
+    # LEARNING
+    onboarding_state: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default="NEW",
     )
 
     # What the learner wants to achieve.
