@@ -11,7 +11,7 @@ from app.api.routes.onboarding import router as onboarding_router
 from app.api.routes.chat_sessions import router as chat_router
 from app.api.routes.progress import router as progress_router
 from app.api.routes.graph import router as graph_router
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title=settings.app_name,
@@ -22,7 +22,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "http://127.0.0.1:5173",
+        "https://recommender2-production-af3a.up.railway.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
