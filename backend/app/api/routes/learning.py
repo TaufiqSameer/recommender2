@@ -233,6 +233,17 @@ def get_learner_activities(
         )
     }
 
+    # Deduplicate: keep only the most recent activity per (skill_id, title).
+    # Since activities are already sorted by created_at DESC, the first
+    # occurrence of each (skill_id, title) pair is the newest.
+    seen_keys: set[tuple[str, str]] = set()
+    unique_activities = []
+    for activity in activities:
+        key = (activity.skill_id or "", activity.title or "")
+        if key not in seen_keys:
+            seen_keys.add(key)
+            unique_activities.append(activity)
+
     return {
         "learner_id": learner_id,
         "activities_completed": len(completed_activity_ids),
@@ -257,7 +268,7 @@ def get_learner_activities(
                     else None
                 ),
             }
-            for activity in activities
+            for activity in unique_activities
         ],
     }
 
@@ -466,6 +477,15 @@ def get_learner_activities_legacy(
         item.source_id for item in evidence if item.source_id
     }
 
+    # Deduplicate: keep only the most recent activity per (skill_id, title).
+    seen_keys: set[tuple[str, str]] = set()
+    unique_activities = []
+    for activity in activities:
+        key = (activity.skill_id or "", activity.title or "")
+        if key not in seen_keys:
+            seen_keys.add(key)
+            unique_activities.append(activity)
+
     return {
         "learner_id": learner_id,
         "activities_completed": len(completed_activity_ids),
@@ -483,7 +503,7 @@ def get_learner_activities_legacy(
                 "generation_source": activity.generation_source,
                 "created_at": activity.created_at,
             }
-            for activity in activities
+            for activity in unique_activities
         ],
     }
 
