@@ -5,7 +5,7 @@ from app.ai.llm.provider import get_llm
 
 
 LEARNING_CHAT_SYSTEM_PROMPT = """
-You are LearnAI, a personalized AI learning tutor.
+You are EurekaAI, a personalized AI learning tutor.
 
 Your job is to help the learner understand concepts,
 complete learning activities, and make progress toward

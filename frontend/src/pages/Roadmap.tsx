@@ -735,7 +735,7 @@ export default function Roadmap() {
           <Compass size={40} className="empty-icon" />
           <p>No skill graph available yet.</p>
           <p className="muted">
-            Complete onboarding so LearnAI can build your interactive skill roadmap.
+            Complete onboarding so EurekaAI can build your interactive skill roadmap.
           </p>
         </div>
       </div>

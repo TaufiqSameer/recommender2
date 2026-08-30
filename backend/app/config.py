@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     database_url: str
 
-    app_name: str = "LearnAI"
+    app_name: str = "EurekaAI"
     debug: bool = True
     llm_provider: str = "gemini"
     gemini_api_key: str | None = None

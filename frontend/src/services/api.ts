@@ -10,14 +10,15 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000
 // ─── Token helpers ───────────────────────────────────────────────────────────
 
 export function getToken(): string | null {
-  return localStorage.getItem("learnai_token");
+  return localStorage.getItem("eurekaai_token") || localStorage.getItem("learnai_token");
 }
 
 export function setToken(token: string): void {
-  localStorage.setItem("learnai_token", token);
+  localStorage.setItem("eurekaai_token", token);
 }
 
 export function clearToken(): void {
+  localStorage.removeItem("eurekaai_token");
   localStorage.removeItem("learnai_token");
 }
 

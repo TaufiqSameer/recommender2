@@ -158,7 +158,7 @@ def send_message(
         assistant_content = result.message
     except Exception:
         assistant_content = (
-            "LearnAI is temporarily unavailable. "
+            "EurekaAI is temporarily unavailable. "
             "Your progress is safe. Please try again."
         )
 

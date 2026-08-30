@@ -29,8 +29,8 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-brand">
-          <div className="brand-mark">L</div>
-          <span className="brand-name">LearnAI</span>
+          <div className="brand-mark">E</div>
+          <span className="brand-name">EurekaAI</span>
         </div>
 
         <h1 className="auth-title">Welcome back</h1>

@@ -24,7 +24,7 @@ const STATE_LABELS: Record<string, string> = {
 };
 
 const WELCOME =
-  "Hi! I'm LearnAI. I'm here to build your personalised learning path. To get started — what would you like to learn?";
+  "Hi! I'm EurekaAI. I'm here to build your personalised learning path. To get started — what would you like to learn?";
 
 export default function Onboarding() {
   const { refreshUser } = useAuth();
@@ -116,7 +116,7 @@ export default function Onboarding() {
       appendMessage({
         role: "assistant",
         content:
-          "LearnAI is temporarily unavailable. Your progress is safe. Please try again.",
+          "EurekaAI is temporarily unavailable. Your progress is safe. Please try again.",
       });
     } finally {
       setSending(false);
@@ -150,8 +150,8 @@ export default function Onboarding() {
       {/* Header */}
       <header className="onboarding-header">
         <div className="auth-brand" style={{ marginBottom: 0 }}>
-          <div className="brand-mark">L</div>
-          <span className="brand-name">LearnAI</span>
+          <div className="brand-mark">E</div>
+          <span className="brand-name">EurekaAI</span>
         </div>
         <div className="onboarding-phase">
           <span className="phase-label">{STATE_LABELS[state] ?? state}</span>
@@ -254,7 +254,7 @@ export default function Onboarding() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-                placeholder="Type your message to LearnAI..."
+                placeholder="Type your message to EurekaAI..."
                 disabled={sending}
                 className="chat-input"
                 autoFocus

@@ -1,8 +1,8 @@
-# LearnAI
+# EurekaAI
 
 ## AI-Powered Adaptive Learning Platform
 
-LearnAI is an AI-powered adaptive learning platform that creates a personalized learning experience for each learner.
+EurekaAI is an AI-powered adaptive learning platform that creates a personalized learning experience for each learner.
 
 The system combines a learner model, adaptive recommendations, learning activities, AI evaluation, and a conversational AI tutor.
 
@@ -34,7 +34,7 @@ The learner model tracks information such as mastery, confidence, attempts, skil
 
 The adaptive system uses this information to determine what the learner should learn next.
 
-The LearnAI chatbot acts as a personal learning tutor. It uses the learner's current skill, mastery, confidence, activity, recent evidence, and conversation history to provide personalized explanations and guidance.
+The EurekaAI chatbot acts as a personal learning tutor. It uses the learner's current skill, mastery, confidence, activity, recent evidence, and conversation history to provide personalized explanations and guidance.
 
 ---
 
@@ -73,7 +73,7 @@ The LearnAI chatbot acts as a personal learning tutor. It uses the learner's cur
 
 ### Adaptive Learning
 
-LearnAI continuously updates the learner's skill state based on their performance.
+EurekaAI continuously updates the learner's skill state based on their performance.
 
 ```text
 Initial Mastery
@@ -91,7 +91,7 @@ Next activity is selected
 
 ### AI Tutor
 
-The LearnAI chatbot provides a conversational learning experience. It can explain concepts, answer learning questions, provide hints, help debug solutions, explain mistakes, provide feedback, and adapt explanations to learner ability.
+The EurekaAI chatbot provides a conversational learning experience. It can explain concepts, answer learning questions, provide hints, help debug solutions, explain mistakes, provide feedback, and adapt explanations to learner ability.
 
 ### Learning Activities
 
@@ -306,7 +306,7 @@ Create Account
       ↓
 Login
       ↓
-Tell LearnAI what you want to learn
+Tell EurekaAI what you want to learn
       ↓
 Initial Assessment
       ↓
@@ -314,7 +314,7 @@ Learner Model Created
       ↓
 Personalized Activity Recommended
       ↓
-Interact with LearnAI Tutor
+Interact with EurekaAI Tutor
       ↓
 Submit Activity
       ↓
@@ -372,7 +372,7 @@ Next Activity
 
 # 8. AI Tutor
 
-The LearnAI chatbot receives relevant learner context, including:
+The EurekaAI chatbot receives relevant learner context, including:
 
 - Current skill
 - Current mastery
@@ -405,7 +405,7 @@ The current activity instructions are treated as authoritative so that the tutor
 
 # 9. Authentication
 
-LearnAI uses authenticated users rather than relying on a hardcoded learner ID.
+EurekaAI uses authenticated users rather than relying on a hardcoded learner ID.
 
 The authentication flow is:
 
@@ -448,7 +448,7 @@ Passwords are stored as secure password hashes rather than plaintext passwords.
 # 10. Project Structure
 
 ```text
-LearnAI/
+EurekaAI/
 │
 ├── backend/
 │   ├── app/

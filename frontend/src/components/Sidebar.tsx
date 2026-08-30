@@ -40,8 +40,8 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">L</div>
-        <span className="brand-name">LearnAI</span>
+        <div className="brand-mark">E</div>
+        <span className="brand-name">EurekaAI</span>
       </div>
 
       <nav className="sidebar-nav">

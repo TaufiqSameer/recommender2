@@ -110,7 +110,7 @@ export default function Settings() {
             <User size={20} className="section-icon" />
             <div>
               <h2>Profile Details</h2>
-              <p>Customize how you appear in LearnAI</p>
+              <p>Customize how you appear in EurekaAI</p>
             </div>
           </div>
 
@@ -146,7 +146,7 @@ export default function Settings() {
               rows={3}
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              placeholder="What are you hoping to build or achieve with LearnAI?"
+              placeholder="What are you hoping to build or achieve with EurekaAI?"
             />
           </div>
         </section>
@@ -157,7 +157,7 @@ export default function Settings() {
             <Sliders size={20} className="section-icon" />
             <div>
               <h2>Learning Preferences</h2>
-              <p>Configure how LearnAI tailors your exercises and pace</p>
+              <p>Configure how EurekaAI tailors your exercises and pace</p>
             </div>
           </div>
 
@@ -179,7 +179,7 @@ export default function Settings() {
               <span className="range-val-badge">{weeklyHours} hrs</span>
             </div>
             <p className="field-hint">
-              LearnAI adjusts recommendation velocity based on your scheduled time.
+              EurekaAI adjusts recommendation velocity based on your scheduled time.
             </p>
           </div>
 

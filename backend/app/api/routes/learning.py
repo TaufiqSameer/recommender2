@@ -289,7 +289,7 @@ def learning_chat(
     except Exception:
         return {
             "message": (
-                "LearnAI is temporarily unavailable. "
+                "EurekaAI is temporarily unavailable. "
                 "Your progress is safe. Please try again."
             ),
             "context": {
@@ -513,7 +513,7 @@ def learning_chat_legacy(
     except Exception:
         return {
             "message": (
-                "LearnAI is temporarily unavailable. "
+                "EurekaAI is temporarily unavailable. "
                 "Your progress is safe. Please try again."
             ),
             "context": {"skill_id": None, "mastery": None, "confidence": None},

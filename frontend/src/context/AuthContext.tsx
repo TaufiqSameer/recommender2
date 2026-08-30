@@ -10,6 +10,7 @@ import {
 import {
   clearToken,
   getMe,
+  getToken,
   login as apiLogin,
   setToken,
   signup as apiSignup,
@@ -53,10 +54,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // On mount: try to restore session from stored token
   useEffect(() => {
-    const token = localStorage.getItem("learnai_token");
+    const token = getToken();
     if (!token) {
       setLoading(false);
-      return;
+        return;
     }
     refreshUser().finally(() => setLoading(false));
   }, [refreshUser]);

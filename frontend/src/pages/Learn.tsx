@@ -196,7 +196,7 @@ export default function Learn({ onBack }: LearnProps) {
           id: crypto.randomUUID(),
           role: "assistant",
           content:
-            "LearnAI is temporarily unavailable. Your progress is safe. Please try again in a moment.",
+            "EurekaAI is temporarily unavailable. Your progress is safe. Please try again in a moment.",
         },
       ]);
     } finally {
@@ -572,7 +572,7 @@ export default function Learn({ onBack }: LearnProps) {
                   <Sparkles size={16} />
                 </div>
                 <div>
-                  <strong>LearnAI Tutor</strong>
+                  <strong>EurekaAI Tutor</strong>
                   <span className="tutor-status-pill">● Online Companion</span>
                 </div>
               </div>
@@ -619,7 +619,7 @@ export default function Learn({ onBack }: LearnProps) {
                   )}
                   <div className="tutor-msg-content">
                     <div className="tutor-msg-sender">
-                      {message.role === "assistant" ? "LearnAI" : "You"}
+                      {message.role === "assistant" ? "EurekaAI" : "You"}
                     </div>
                     <div className="tutor-msg-text">
                       {message.content.split("\n").map((line, i) => (

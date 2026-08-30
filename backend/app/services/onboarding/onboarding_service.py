@@ -51,7 +51,7 @@ class OnboardingResponse:
 # ─── Prompts ─────────────────────────────────────────────────────────────────
 
 _ONBOARDING_SYSTEM = """
-You are LearnAI, a friendly adaptive learning assistant.
+You are EurekaAI, a friendly adaptive learning assistant.
 You are onboarding a new learner and gathering information to personalise their learning path.
 
 Your current phase: {phase}
@@ -180,7 +180,7 @@ class OnboardingService:
         if not self._llm_available:
             return OnboardingResponse(
                 message=(
-                    "LearnAI is temporarily unavailable. "
+                    "EurekaAI is temporarily unavailable. "
                     "Your progress is safe. Please try again in a moment."
                 ),
                 state=state,
@@ -204,7 +204,7 @@ class OnboardingService:
         except Exception:
             return OnboardingResponse(
                 message=(
-                    "LearnAI is temporarily unavailable. "
+                    "EurekaAI is temporarily unavailable. "
                     "Your progress is safe. Please try again in a moment."
                 ),
                 state=state,
